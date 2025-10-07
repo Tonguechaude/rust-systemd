@@ -41,14 +41,14 @@ where
         .map(|x| unsafe { const_iovec::from_str(x) })
         .collect();
 
-    if iovecs.len() > c_int::MAX as usize {
-        return Err(io::Error::new(
+    let iovecs_len: c_int = iovecs.len().try_into().map_err(|_| {
+        io::Error::new(
             io::ErrorKind::InvalidInput,
             "Too many iovecs for systemd journal"
-        ));
-    }
+        )
+    })?;
 
-    let result = unsafe { ffi::sd_journal_sendv(iovecs.as_ptr(), iovecs.len() as c_int) };
+    let result = unsafe { ffi::sd_journal_sendv(iovecs.as_ptr(), iovecs_len) };
     ffi_result(result).map(|_| ())
 }
 
