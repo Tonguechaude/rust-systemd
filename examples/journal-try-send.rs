@@ -9,8 +9,8 @@ mod x {
     pub fn main() {
         println!("Demonstrating new Result-based journal API...");
 
-        // Using send_result for detailed control
-        match journal::send_result(&[
+        // Using try_send for detailed control
+        match journal::try_send(&[
             "MESSAGE=Hello from Rust with Result API!",
             "PRIORITY=6",
             "CODE_FILE=journal-send-result.rs",
@@ -21,15 +21,15 @@ mod x {
             Err(e) => println!("Failed to send detailed message: {}", e),
         }
 
-        // Using print_result for simple messages
-        if let Err(e) = journal::print_result(6, "Simple message with Result API") {
+        // Using try_print for simple messages
+        if let Err(e) = journal::try_print(6, "Simple message with Result API") {
             println!("Failed to send simple message: {}", e);
         } else {
             println!("Simple message sent successfully");
         }
 
-        // Using log_result for structured logging
-        match journal::log_result(
+        // Using try_log for structured logging
+        match journal::try_log(
             4, // Warning level
             file!(),
             line!(),
@@ -42,17 +42,17 @@ mod x {
 
         // Demonstrating error handling with invalid data
         // This should still succeed as systemd is quite permissive
-        match journal::send_result(&["INVALID_KEY_WITHOUT_VALUE"]) {
+        match journal::try_send(&["INVALID_KEY_WITHOUT_VALUE"]) {
             Ok(()) => println!("Even invalid-looking data was accepted"),
             Err(e) => println!("Invalid data was rejected: {}", e),
         }
 
         // Chaining operations with proper error handling
         let operations = [
-            || journal::print_result(3, "Error level message"),
-            || journal::print_result(4, "Warning level message"),
-            || journal::print_result(6, "Info level message"),
-            || journal::print_result(7, "Debug level message"),
+            || journal::try_print(3, "Error level message"),
+            || journal::try_print(4, "Warning level message"),
+            || journal::try_print(6, "Info level message"),
+            || journal::try_print(7, "Debug level message"),
         ];
 
         let mut success_count = 0;

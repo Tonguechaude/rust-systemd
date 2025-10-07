@@ -37,26 +37,26 @@ fn test() {
 }
 
 #[test]
-fn test_result_api() {
-    // Test the new Result-based API
-    journal::send_result(&["CODE_FILE=HI", "CODE_LINE=1213", "CODE_FUNCTION=LIES"]).unwrap();
-    journal::print_result(1, &format!("Rust can talk to the journal: {}", 4)).unwrap();
+fn test_try_api() {
+    // Test the new try-based API
+    journal::try_send(&["CODE_FILE=HI", "CODE_LINE=1213", "CODE_FUNCTION=LIES"]).unwrap();
+    journal::try_print(1, &format!("Rust can talk to the journal: {}", 4)).unwrap();
     
     // Test that the functions return Ok(()) on success
-    let result1 = journal::send_result(&["MESSAGE=test message"]);
+    let result1 = journal::try_send(&["MESSAGE=test message"]);
     assert!(result1.is_ok());
     
-    let result2 = journal::print_result(6, "test print");
+    let result2 = journal::try_print(6, "test print");
     assert!(result2.is_ok());
     
-    // Test log_result function
-    let result3 = journal::log_result(6, "test.rs", 42, "test_module", &format_args!("test log entry"));
+    // Test try_log function
+    let result3 = journal::try_log(6, "test.rs", 42, "test_module", &format_args!("test log entry"));
     assert!(result3.is_ok());
 }
 
 #[test]
-fn test_result_api_with_special_chars() {
-    let result = journal::send_result(&[
+fn test_try_api_with_special_chars() {
+    let result = journal::try_send(&[
         "MESSAGE=Test with special chars: éàü©",
         "CUSTOM=Line\nbreak",
     ]);
@@ -66,7 +66,7 @@ fn test_result_api_with_special_chars() {
 #[test]
 fn test_empty_args() {
     // Test with an empty array
-    let result = journal::send_result(&[]);
+    let result = journal::try_send(&[]);
     // Systemd should accept this
     assert!(result.is_ok());
 }
